@@ -8,7 +8,10 @@ export type PIR = {
     type: 'SWITCH';
     value: 0 | 1;
 };
-export function createPIR(pin: number, callback: (value: PIR) => Promise<void>) {
+export function createPIR(
+    pin: number,
+    callback: (value: PIR) => Promise<void>
+) {
     totalSensors++;
     const sensorId = MAC + ':00:' + totalSensors.toString(16);
     const pir = new Gpio(pin, 'in', 'both');
