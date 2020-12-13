@@ -58,7 +58,7 @@
     "no-constant-condition": [1],
     "no-continue": [2],
     "no-control-regex": [2],
-    "no-debugger": [2],
+    "no-debugger": ["off"],
     "no-delete-var": [2],
     "no-div-regex": [0],
     "no-dupe-args": [2],
@@ -150,7 +150,6 @@
     "semi-spacing": [2, {"before": false, "after": true}],
     "sort-vars": [0],
     "space-after-keywords": [0, "never"],
-    "space-before-function-paren": [2, {"anonymous": "never", "named": "never"}],
     "space-before-blocks": [0, "always"],
     "space-in-brackets": [
       0, "never", {
