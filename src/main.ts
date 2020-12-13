@@ -11,9 +11,9 @@ const pinNumber = +(process.env.PIN_NUMBER || '');
 async function main() {
     mqtt = await createMQTTService(mqttUrl);
     console.log('connected to MQTT', mqtt.connected);
-    const pirDevice = createPIR(pinNumber, status => {
+    const pirDevice = createPIR(pinNumber, async status => {
         try {
-            mqtt.publish(
+            await mqtt.publish(
                 `tribeca/${pirDevice.sensorId}/status`,
                 JSON.stringify(status)
             );
@@ -23,7 +23,7 @@ async function main() {
     });
     const status = await pirDevice.read();
     console.log('Publish first read', status);
-    mqtt.publish(
+    await mqtt.publish(
         `tribeca/${pirDevice.sensorId}/status`,
         JSON.stringify(status)
     );

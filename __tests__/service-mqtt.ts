@@ -1,7 +1,13 @@
 import { createMQTTService } from '../src/service-mqtt';
+import aedesFactory from 'aedes';
+import net, { AddressInfo } from 'net';
 
-test('MQTTService should connect to sew and publish data', async () => {
-    const mqttClient = await createMQTTService();
+test('MQTTService should connect to mqtt server and publish data', async () => {
+    const aedes = aedesFactory();
+    const mqttServer = net.createServer(aedes.handle);
+    await new Promise<void>(resolve => mqttServer.listen(0, () => resolve()));
+    const mqttServerPort = (mqttServer.address() as AddressInfo).port;
+    const mqttClient = await createMQTTService('mqtt://localhost:' + mqttServerPort);
     const msg = {
         sensorId: '00:00:00:00:00:00:00:01',
         type: 'SWITCH',
@@ -13,5 +19,7 @@ test('MQTTService should connect to sew and publish data', async () => {
     );
     expect(mqttClient).toBeTruthy();
     expect(mqttClient.connected).toBeTruthy();
-    mqttClient.end();
+    await mqttClient.end();
+    await mqttServer.close();
+    await aedes.close();
 });
