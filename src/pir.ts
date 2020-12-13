@@ -19,5 +19,15 @@ export function createPIR(pin: number, callback: (value: PIR) => void) {
             callback({ sensorId, type: 'SWITCH', value });
         }
     });
-    return { pir, sensorId };
+    return {
+        sensorId,
+        close: () => {
+            pir.unwatchAll();
+            pir.unexport();
+        },
+        read: async () => {
+            const status = await pir.read();
+            return { sensorId, type: 'SWITCH', value: status };
+        }
+    };
 }

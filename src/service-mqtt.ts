@@ -1,7 +1,5 @@
-import MQTT from 'async-mqtt';
+import MQTT, { AsyncMqttClient } from 'async-mqtt';
 
-export const SERVER = process.env.MQTT;
-
-export async function createMQTTService() {
-    return await MQTT.connectAsync(SERVER);
+export function createMQTTService(mqttUrl: string): Promise<AsyncMqttClient> {
+    return MQTT.connectAsync(mqttUrl);
 }

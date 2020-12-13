@@ -5,22 +5,27 @@ import { AsyncMqttClient } from 'async-mqtt';
 let pirDevice: ReturnType<typeof createPIR>;
 let mqtt: AsyncMqttClient;
 
+const mqttUrl = process.env.MQTT_URL || '';
+const pinNumber = +(process.env.PIN_NUMBER || '');
+
 async function main() {
-    mqtt = await createMQTTService();
+    mqtt = await createMQTTService(mqttUrl);
     console.log('connected to MQTT', mqtt.connected);
-    const pirDevice = createPIR(17, status => {
+    const pirDevice = createPIR(pinNumber, status => {
         try {
-            mqtt.publish(`tribeca/${pirDevice.sensorId}/status`, JSON.stringify(status));
+            mqtt.publish(
+                `tribeca/${pirDevice.sensorId}/status`,
+                JSON.stringify(status)
+            );
         } catch (error) {
             console.log('Error publishing', pirDevice, error.message);
         }
     });
-    const currentStatus = await pirDevice.pir.read();
-    const firstMessage = JSON.stringify({ sensorId: pirDevice.sensorId, type: 'SWITCH', value: currentStatus });
-    console.log('Publish first message', firstMessage);
+    const status = await pirDevice.read();
+    console.log('Publish first read', status);
     mqtt.publish(
         `tribeca/${pirDevice.sensorId}/status`,
-        firstMessage
+        JSON.stringify(status)
     );
 }
 
@@ -28,8 +33,7 @@ async function gracefulShutdown() {
     try {
         console.log('Graceful shutdown starting');
         if (pirDevice) {
-            pirDevice.pir.unwatchAll();
-            pirDevice.pir.unexport();
+            pirDevice.close();
         }
         if (mqtt) {
             await mqtt.end();
