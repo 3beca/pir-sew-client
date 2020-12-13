@@ -19,9 +19,5 @@ export function createPIR(pin: number, callback: (value: PIR) => void) {
             callback({ sensorId, type: 'SWITCH', value });
         }
     });
-    process.on('SIGINT', () => {
-        pir.unwatchAll();
-        pir.unexport();
-    });
     return { pir, sensorId };
 }

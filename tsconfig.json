@@ -1,6 +1,7 @@
 {
-  "include": ["./src/**/*.ts", "./__tests__/**/*.ts"],
+  "include": ["./src/**/*.ts"],
   "compilerOptions": {
+    "baseUrl": ".",
     "module": "commonjs",
     "target": "ES2015",
     "noImplicitAny": false,
