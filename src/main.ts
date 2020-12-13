@@ -4,6 +4,7 @@ import { AsyncMqttClient } from 'async-mqtt';
 
 let pirDevice: ReturnType<typeof createPIR>;
 let mqtt: AsyncMqttClient;
+
 async function main() {
     mqtt = await createMQTTService();
     console.log('connected to MQTT', mqtt.connected);
@@ -16,7 +17,7 @@ async function main() {
     });
     const currentStatus = await pirDevice.pir.read();
     const firstMessage = JSON.stringify({ sensorId: pirDevice.sensorId, type: 'SWITCH', value: currentStatus });
-    console.log('Pusblish first message', firstMessage);
+    console.log('Publish first message', firstMessage);
     mqtt.publish(
         `tribeca/${pirDevice.sensorId}/status`,
         firstMessage
@@ -24,13 +25,27 @@ async function main() {
 }
 
 async function gracefulShutdown() {
-    console.log('Close PIR service', mqtt.connected);
-    pirDevice.pir.unwatchAll();
-    pirDevice.pir.unexport();
-    await mqtt.end();
+    try {
+        console.log('Graceful shutdown starting');
+        if (pirDevice) {
+            pirDevice.pir.unwatchAll();
+            pirDevice.pir.unexport();
+        }
+        if (mqtt) {
+            await mqtt.end();
+        }
+        console.log('Graceful shutdown completed, exit now');
+        process.exit(0);
+    } catch (error) {
+        console.error('Graceful shutdown error', error);
+        process.exit(1);
+    }
 }
 
 process.on('SIGTERM', gracefulShutdown);
 process.on('SIGINT', gracefulShutdown);
 
-main();
+main().catch(error => {
+    console.error('Error on starting up', error);
+    process.exit(1);
+});
