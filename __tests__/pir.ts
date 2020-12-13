@@ -1,4 +1,4 @@
-let triggerCallback;
+let triggerCallback: (err, value) => void;
 jest.mock('onoff', () => ({
     Gpio: function() {
         return {
@@ -7,8 +7,8 @@ jest.mock('onoff', () => ({
             },
             unwatchAll() {},
             unexport() {},
-            watch(c) { triggerCallback = c }
-        }
+            watch(c) { triggerCallback = c; }
+        };
     }
 }));
 import { createPIR } from '../src/pir';
@@ -47,7 +47,7 @@ describe('createPIR', () => {
     });
 
     it('should not call callback on watch error', () => {
-        triggerCallback(Error('Oops'));
-        expect(callbackSpy).not.toBeCalled;
+        triggerCallback(Error('Oops'), null);
+        expect(callbackSpy).not.toBeCalled();
     });
 });
