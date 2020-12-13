@@ -13,20 +13,17 @@ async function main() {
     console.log('connected to MQTT', mqtt.connected);
     const pirDevice = createPIR(pinNumber, async status => {
         try {
-            await mqtt.publish(
-                `tribeca/${pirDevice.sensorId}/status`,
-                JSON.stringify(status)
-            );
+            const topic = `tribeca/${pirDevice.sensorId}/status`;
+            console.log('Publish watch change', topic, status);
+            await mqtt.publish(topic, JSON.stringify(status));
         } catch (error) {
             console.log('Error publishing', pirDevice, error.message);
         }
     });
     const status = await pirDevice.read();
-    console.log('Publish first read', status);
-    await mqtt.publish(
-        `tribeca/${pirDevice.sensorId}/status`,
-        JSON.stringify(status)
-    );
+    const topic = `tribeca/${pirDevice.sensorId}/status`;
+    console.log('Publish fist read', topic, status);
+    await mqtt.publish(topic, JSON.stringify(status));
 }
 
 async function gracefulShutdown() {
