@@ -20,7 +20,7 @@
   "author": "juanjo@juanjofp.com, francesco.rivola@gmail.com",
   "license": "MIT",
   "devDependencies": {
-    "@types/jest": "^26.0.21",
+    "@types/jest": "^26.0.22",
     "@typescript-eslint/eslint-plugin": "^4.19.0",
     "@typescript-eslint/parser": "^4.19.0",
     "aedes": "^0.45.0",
